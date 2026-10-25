@@ -18,7 +18,7 @@ const isolation = {
   'Cross-Origin-Embedder-Policy': 'require-corp',
 }
 
-/** Fails the build if Cloudflare Pages would refuse a file. */
+/** Fails the build if Cloudflare would refuse a file (static assets are capped at 25 MiB each, on Workers as on Pages). */
 function pagesLimit(): Plugin {
   return {
     name: 'pages-limit',
@@ -26,7 +26,9 @@ function pagesLimit(): Plugin {
     closeBundle() {
       const big = oversized(join(root, 'dist'))
       if (big.length) {
-        throw new Error(`Over Pages' 25 MiB limit: ${big.map((f) => `${f.path} (${f.size} bytes)`).join(', ')}`)
+        throw new Error(
+          `Over Cloudflare's 25 MiB asset limit: ${big.map((f) => `${f.path} (${f.size} bytes)`).join(', ')}`,
+        )
       }
     },
   }

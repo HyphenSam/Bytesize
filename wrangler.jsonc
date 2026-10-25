@@ -1,0 +1,13 @@
+// Cloudflare Workers, static assets only: `pnpm build`, then `wrangler deploy`
+// uploads dist/. public/_headers (copied into dist/) sets the cross-origin
+// isolation headers the AVIF and JPEG XL encoders need for threads.
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "bytesize",
+  "compatibility_date": "2026-10-19",
+  "assets": {
+    "directory": "./dist",
+    // One page: any path that isn't a file gets index.html.
+    "not_found_handling": "single-page-application",
+  },
+}

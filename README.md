@@ -37,7 +37,7 @@ additional terms or conditions.
 
 ## Development
 
-Needs Node 24+ and pnpm 11 (pinned in `package.json` and `.node-version`, which Cloudflare Pages reads too).
+Needs Node 24+ and pnpm 11 (pinned in `package.json` and `.node-version`, which Cloudflare's builds read too).
 
 ```bash
 pnpm install
@@ -47,14 +47,16 @@ pnpm dev           # http://localhost:5173
 
 This project is test-driven: see [CLAUDE.md](CLAUDE.md) for the rules and the architecture.
 
-## Deploying to Cloudflare Pages
+## Deploying
 
-Cloudflare Pages builds it from this repository on every push to `main`, and serves it at
-bytesize.hyphensam.com (a custom domain on the Pages project). The project's settings:
+Cloudflare Workers Builds builds it from this repository on every push to `main` and serves it at
+bytesize.hyphensam.com (a custom domain on the Worker). The Worker's build settings:
 
 - **Build command:** `pnpm build`
-- **Build output directory:** `dist`
+- **Deploy command:** `npx wrangler deploy`
 
-Everything is static and every file is under Pages' 25 MiB limit (the build fails if one isn't).
+The Worker only serves the static files in `dist/`, as set in [`wrangler.jsonc`](wrangler.jsonc).
+Every file is under the 25 MiB limit on static assets (the build fails if one isn't).
 `public/_headers` sets the cross-origin isolation headers the AVIF and JPEG XL encoders need for
-threads.
+threads. To try the production build on the Workers runtime locally:
+`pnpm build && pnpm exec wrangler dev`.

@@ -1,6 +1,6 @@
 # Bytesize
 
-A static web app (Cloudflare Pages) that compresses, converts and resizes images entirely on the
+A static web app (Cloudflare Workers, static assets only) that compresses, converts and resizes images entirely on the
 user's device, with jSquash's WebAssembly codecs. Installable (PWA) and works offline for the formats
 it has used. The name lives in `src/lib/brand.ts` and `vite.config.ts` (manifest) only. Its UI is
 Art Cleaner's (a sister project), refitted.
@@ -38,8 +38,9 @@ pnpm dev              # http://localhost:5173
 pnpm test             # Vitest, once
 pnpm test:watch
 pnpm typecheck
-pnpm build            # typecheck + build to dist/; fails if any file is over Pages' 25 MiB limit
+pnpm build            # typecheck + build to dist/; fails if any file is over the 25 MiB asset limit
 pnpm preview          # serves dist/ with the same headers as production
+pnpm exec wrangler dev  # serves dist/ on the Workers runtime, reading public/_headers as production does
 ```
 
 ## Design
@@ -96,7 +97,12 @@ percent or two); libjxl effort 7; oxipng level 2.
 
 ## Hosting facts that bite
 
-- Pages caps every file at 25 MiB; the largest codec wasm is about 3.5 MB.
+- Workers Builds deploys `main` with `npx wrangler deploy`, using `wrangler.jsonc` (assets only, no
+  Worker script; unknown paths get `index.html`). Without that file, Wrangler tries to configure the
+  project itself and fails. pnpm 11 refuses dependency install scripts it hasn't been told about, so
+  `workerd` (Wrangler's runtime) is allowed in `pnpm-workspace.yaml`; a new dependency with an
+  install script needs the same.
+- Static assets are capped at 25 MiB a file; the largest codec wasm is about 3.5 MB.
 - `public/_headers` sets COOP `same-origin` and COEP `require-corp` so the AVIF and JPEG XL encoders
   can use threads. Everything is same-origin, so nothing needs CORP headers; adding a cross-origin
   resource (fonts, analytics, a CDN) will break unless it sends them.

@@ -9,8 +9,8 @@ web
 ## Stack
 
 Vite, React 19, TypeScript, Tailwind v4, Radix primitives, Vitest; pnpm. Static site on Cloudflare
-Pages; the codecs are jSquash's WebAssembly builds of Squoosh's encoders, bundled with the site.
-Installable PWA that works offline for the formats it has used.
+Workers (static assets only); the codecs are jSquash's WebAssembly builds of Squoosh's encoders,
+bundled with the site. Installable PWA that works offline for the formats it has used.
 
 ## Users
 
