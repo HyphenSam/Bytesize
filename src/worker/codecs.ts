@@ -65,7 +65,7 @@ export const codecs: Codecs = {
         return encodeWebp(data, lossless ? { lossless: 1, quality: 75, method: 4 } : { quality, method: 4 })
       case 'avif':
         // Speed 7: about 2.5× faster than libavif's default 6, files within a percent or two.
-        return encodeAvif(data, { quality, speed: 7 })
+        return encodeAvif(data, lossless ? { lossless: true, speed: 7 } : { quality, speed: 7 })
       case 'jxl':
         return encodeJxl(data, lossless ? { lossless: true, effort: 7 } : { quality, effort: 7 })
       case 'png':

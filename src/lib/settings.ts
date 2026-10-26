@@ -1,4 +1,5 @@
 /** What the user picks, its defaults, and what it means for a job. */
+import { fitWithin, scaleBy } from './image'
 
 export type Format = 'jpeg' | 'webp' | 'avif' | 'jxl' | 'png'
 /** `original`: each image keeps its own format. */
@@ -13,7 +14,11 @@ export type Settings = {
   quality: Record<LossyFormat, number>
   webpLossless: boolean
   jxlLossless: boolean
+  avifLossless: boolean
   resize: boolean
+  /** `scale`: each image by `scale` percent. `fit`: inside `maxWidth` × `maxHeight`. */
+  resizeMode: 'scale' | 'fit'
+  scale: number
   maxWidth: number
   maxHeight: number
   /** Searches for the highest quality that fits under `targetKb`. */
@@ -32,7 +37,10 @@ export const DEFAULT_SETTINGS: Settings = {
   quality: DEFAULT_QUALITY,
   webpLossless: false,
   jxlLossless: false,
+  avifLossless: false,
   resize: false,
+  resizeMode: 'scale',
+  scale: 50,
   maxWidth: 1920,
   maxHeight: 1920,
   target: false,
@@ -63,7 +71,10 @@ export function parseSettings(saved: unknown): Settings {
     },
     webpLossless: bool(s.webpLossless, d.webpLossless),
     jxlLossless: bool(s.jxlLossless, d.jxlLossless),
+    avifLossless: bool(s.avifLossless, d.avifLossless),
     resize: bool(s.resize, d.resize),
+    resizeMode: oneOf(s.resizeMode, ['scale', 'fit'], d.resizeMode),
+    scale: int(s.scale, 1, 100, d.scale),
     maxWidth: int(s.maxWidth, 1, MAX_SIDE, d.maxWidth),
     maxHeight: int(s.maxHeight, 1, MAX_SIDE, d.maxHeight),
     target: bool(s.target, d.target),
@@ -75,13 +86,18 @@ export function parseSettings(saved: unknown): Settings {
 const record = (v: unknown) => (typeof v === 'object' && v !== null ? v : {}) as Record<string, unknown>
 
 /** How an image is encoded once its output format is known. With "same
- * format", a lossless WebP stays lossless; the switches are for a format
- * chosen on purpose. */
+ * format" and the WebP switch off, a lossless WebP stays lossless. */
 export function encodingOf(s: Settings, format: Format, losslessSource = false) {
-  const chosen = s.format !== 'original'
   const lossless =
     format === 'png' ||
-    (format === 'webp' && (chosen ? s.webpLossless : losslessSource)) ||
-    (format === 'jxl' && chosen && s.jxlLossless)
+    (format === 'webp' && (s.webpLossless || (s.format === 'original' && losslessSource))) ||
+    (format === 'avif' && s.avifLossless) ||
+    (format === 'jxl' && s.jxlLossless)
   return { lossless, quality: format === 'png' ? 100 : s.quality[format] }
+}
+
+/** The size an image of `width` × `height` comes out at. */
+export function resizedSize(s: Settings, width: number, height: number) {
+  if (!s.resize) return { width, height }
+  return s.resizeMode === 'scale' ? scaleBy(width, height, s.scale) : fitWithin(width, height, s.maxWidth, s.maxHeight)
 }

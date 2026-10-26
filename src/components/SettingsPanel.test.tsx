@@ -9,14 +9,17 @@ import { SettingsPanel } from './SettingsPanel'
 function Harness({
   onChange = () => {},
   initial = DEFAULT_SETTINGS,
+  source = null,
 }: {
   onChange?: (s: Settings) => void
   initial?: Settings
+  source?: { width: number; height: number } | null
 }) {
   const [settings, setSettings] = useState(initial)
   return (
     <SettingsPanel
       settings={settings}
+      source={source}
       onChange={(s) => {
         setSettings(s)
         onChange(s)
@@ -57,16 +60,62 @@ describe('SettingsPanel', () => {
     expect(screen.queryByRole('slider')).not.toBeInTheDocument()
   })
 
-  it('asks for a box to resize into only when resizing', async () => {
+  it('has a lossless switch for each format that can be, with "same format" too', async () => {
     const user = userEvent.setup()
     const onChange = vi.fn()
     render(<Harness onChange={onChange} />)
-    expect(screen.queryByRole('spinbutton', { name: 'Maximum width' })).not.toBeInTheDocument()
+    await user.click(screen.getByRole('switch', { name: 'Lossless WebP' }))
+    expect(onChange).toHaveBeenLastCalledWith({ ...DEFAULT_SETTINGS, webpLossless: true })
+    expect(screen.queryByRole('slider', { name: 'WebP quality' })).not.toBeInTheDocument()
+    await user.click(screen.getByRole('switch', { name: 'Lossless JPEG XL' }))
+    expect(screen.queryByRole('slider', { name: 'JPEG XL quality' })).not.toBeInTheDocument()
+    expect(screen.getByRole('slider', { name: 'AVIF quality' })).toBeInTheDocument()
+
+    await user.click(screen.getByRole('radio', { name: 'AVIF' }))
+    await user.click(screen.getByRole('switch', { name: 'Lossless' }))
+    expect(onChange).toHaveBeenLastCalledWith({
+      ...DEFAULT_SETTINGS,
+      format: 'avif',
+      webpLossless: true,
+      jxlLossless: true,
+      avifLossless: true,
+    })
+    expect(screen.queryByRole('slider')).not.toBeInTheDocument()
+  })
+
+  it('scales by a percentage when resizing, or fits a box', async () => {
+    const user = userEvent.setup()
+    const onChange = vi.fn()
+    render(<Harness onChange={onChange} />)
+    expect(screen.queryByRole('slider', { name: 'Scale' })).not.toBeInTheDocument()
     await user.click(screen.getByRole('switch', { name: 'Resize' }))
+    const scale = screen.getByRole('slider', { name: 'Scale' })
+    expect(scale).toHaveAttribute('aria-valuenow', '50')
+    scale.focus()
+    await user.keyboard('{ArrowLeft}')
+    expect(onChange).toHaveBeenLastCalledWith({ ...DEFAULT_SETTINGS, resize: true, scale: 49 })
+
+    await user.click(screen.getByRole('radio', { name: 'Fit within' }))
+    expect(screen.queryByRole('slider', { name: 'Scale' })).not.toBeInTheDocument()
     const width = screen.getByRole('spinbutton', { name: 'Maximum width' })
     await user.clear(width)
     await user.type(width, '1280{Enter}')
-    expect(onChange).toHaveBeenLastCalledWith({ ...DEFAULT_SETTINGS, resize: true, maxWidth: 1280 })
+    expect(onChange).toHaveBeenLastCalledWith({
+      ...DEFAULT_SETTINGS,
+      resize: true,
+      scale: 49,
+      resizeMode: 'fit',
+      maxWidth: 1280,
+    })
+  })
+
+  it("shows what the selected image's size becomes", async () => {
+    const user = userEvent.setup()
+    render(<Harness source={{ width: 4000, height: 3000 }} />)
+    await user.click(screen.getByRole('switch', { name: 'Resize' }))
+    expect(screen.getByText('4000 × 3000 → 2000 × 1500')).toBeInTheDocument()
+    await user.click(screen.getByRole('radio', { name: 'Fit within' }))
+    expect(screen.getByText('4000 × 3000 → 1920 × 1440')).toBeInTheDocument()
   })
 
   it('puts back an invalid number when the field is left', async () => {

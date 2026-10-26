@@ -196,7 +196,7 @@ export function App({ clients }: { clients: EngineApi[] }) {
               Add images
             </Button>
           </Section>
-          <SettingsPanel settings={settings} onChange={setSettings} />
+          <SettingsPanel settings={settings} source={selected?.result?.source} onChange={setSettings} />
         </div>
 
         <div className="fixed inset-x-0 bottom-0 z-20 border-t border-line bg-panel px-5 py-4 lg:static">{primary}</div>

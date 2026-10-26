@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { fitWithin, flatten, hasAlpha } from './image'
+import { fitWithin, flatten, hasAlpha, scaleBy } from './image'
 import { rgba } from './testing'
 
 describe('flatten', () => {
@@ -28,5 +28,17 @@ describe('fitWithin', () => {
   it('never scales up, and never to nothing', () => {
     expect(fitWithin(800, 600, 1920, 1920)).toEqual({ width: 800, height: 600 })
     expect(fitWithin(10_000, 2, 100, 100)).toEqual({ width: 100, height: 1 })
+  })
+})
+
+describe('scaleBy', () => {
+  it('scales both sides by a percentage, rounded', () => {
+    expect(scaleBy(4000, 3000, 50)).toEqual({ width: 2000, height: 1500 })
+    expect(scaleBy(695, 1000, 33)).toEqual({ width: 229, height: 330 })
+    expect(scaleBy(800, 600, 100)).toEqual({ width: 800, height: 600 })
+  })
+
+  it('never scales to nothing', () => {
+    expect(scaleBy(10_000, 2, 1)).toEqual({ width: 100, height: 1 })
   })
 })

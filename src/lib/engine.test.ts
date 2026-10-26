@@ -60,12 +60,20 @@ describe('compress', () => {
     expect(upright.result).toMatchObject({ width: 40, height: 30 })
   })
 
+  it('scales by a percentage', async () => {
+    const half = await run(jpeg(), { resize: true, scale: 50 })
+    expect(half.codecs.resizes).toEqual([[20, 15]])
+    expect(half.result).toMatchObject({ width: 20, height: 15, source: { width: 40, height: 30 } })
+    const whole = await run(jpeg(), { resize: true, scale: 100 })
+    expect(whole.codecs.resizes).toEqual([])
+  })
+
   it('resizes only what is larger than the box', async () => {
-    const big = await run(jpeg(), { resize: true, maxWidth: 20, maxHeight: 20 })
+    const big = await run(jpeg(), { resize: true, resizeMode: 'fit', maxWidth: 20, maxHeight: 20 })
     expect(big.codecs.resizes).toEqual([[20, 15]])
     expect(big.result).toMatchObject({ width: 20, height: 15, source: { width: 40, height: 30 } })
     expect(big.events).toContainEqual({ phase: 'resize' })
-    const small = await run(jpeg(), { resize: true, maxWidth: 100, maxHeight: 100 })
+    const small = await run(jpeg(), { resize: true, resizeMode: 'fit', maxWidth: 100, maxHeight: 100 })
     expect(small.codecs.resizes).toEqual([])
   })
 

@@ -2,10 +2,10 @@
  * quality when there's a target size) and put the metadata back. The codecs
  * come in as a dependency, so this is tested with fakes. */
 import { isLosslessWebp, MIME, outputFormat, sniff } from './formats'
-import { fitWithin, flatten, hasAlpha, type Rgba } from './image'
+import { flatten, hasAlpha, type Rgba } from './image'
 import { carriesMetadata, embedMetadata, readIcc } from './metadata'
 import { orient, readExif, readOrientation, uprightExif } from './orientation'
-import { encodingOf, type Format, MAX_SIDE, type Settings } from './settings'
+import { encodingOf, type Format, MAX_SIDE, resizedSize, type Settings } from './settings'
 import { fitQuality } from './target'
 
 export type Decoded = {
@@ -64,13 +64,11 @@ export async function compress(
   const source = { width: image.width, height: image.height }
   signal?.throwIfAborted()
 
-  if (settings.resize) {
-    const size = fitWithin(image.width, image.height, settings.maxWidth, settings.maxHeight)
-    if (size.width !== image.width || size.height !== image.height) {
-      onEvent({ phase: 'resize' })
-      image = await codecs.resize(image, size.width, size.height)
-      signal?.throwIfAborted()
-    }
+  const size = resizedSize(settings, image.width, image.height)
+  if (size.width !== image.width || size.height !== image.height) {
+    onEvent({ phase: 'resize' })
+    image = await codecs.resize(image, size.width, size.height)
+    signal?.throwIfAborted()
   }
   if (format === 'webp' && (image.width > MAX_SIDE || image.height > MAX_SIDE)) {
     throw new Error(`WebP can't be larger than ${MAX_SIDE} px on a side. Turn on Resize, or choose another format.`)

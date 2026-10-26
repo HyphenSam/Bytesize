@@ -79,7 +79,7 @@ dark both first-class.
    which also converts to sRGB. The browser is used too when the original has an ICC profile and
    the output can't carry one (AVIF, JPEG XL), so colours are converted rather than misread.
 3. Turn upright from EXIF if the decoder didn't.
-4. Resize (optional) to fit the box, Lanczos3 in linear light, never up.
+4. Resize (optional) by a percentage or to fit a box, Lanczos3 in linear light, never up.
 5. JPEG output: transparency is flattened onto white first.
 6. Encode. With a target size and a lossy format, `fitQuality` bisects 1 to the slider's quality.
    Metadata is embedded in each attempt, so its bytes count against the target.

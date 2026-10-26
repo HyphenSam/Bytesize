@@ -24,3 +24,9 @@ export function fitWithin(width: number, height: number, maxWidth: number, maxHe
   const scale = Math.min(1, maxWidth / width, maxHeight / height)
   return { width: Math.max(1, Math.round(width * scale)), height: Math.max(1, Math.round(height * scale)) }
 }
+
+/** Both sides scaled by `percent` (at most 100, so never larger). */
+export function scaleBy(width: number, height: number, percent: number) {
+  const scale = Math.min(1, percent / 100)
+  return { width: Math.max(1, Math.round(width * scale)), height: Math.max(1, Math.round(height * scale)) }
+}
