@@ -83,6 +83,13 @@ export default defineConfig({
               expiration: { maxEntries: 40 },
             },
           },
+          {
+            // The app launcher's shared list and icons: shown from the cache
+            // at once (and offline), refreshed in the background.
+            urlPattern: ({ url }) => url.origin === 'https://apps.hyphensam.com',
+            handler: 'StaleWhileRevalidate',
+            options: { cacheName: 'hyphensam-apps', expiration: { maxEntries: 30 } },
+          },
         ],
       },
     }),

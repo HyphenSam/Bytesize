@@ -1,10 +1,12 @@
 import { Download, FolderDown, ImagePlus, Trash2 } from 'lucide-react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { AboutDialog } from './components/AboutDialog'
+import { AppLauncher } from './components/AppLauncher'
 import { BatchStrip } from './components/BatchStrip'
 import { Logo } from './components/Logo'
 import { Section, SettingsPanel } from './components/SettingsPanel'
 import { Stage } from './components/Stage'
+import { ThemeMenu } from './components/ThemeMenu'
 import { Button } from './components/ui/Button'
 import { type EngineApi, useBatch } from './hooks/useBatch'
 import { useInstallPrompt } from './hooks/useInstallPrompt'
@@ -133,12 +135,15 @@ export function App({ clients }: { clients: EngineApi[] }) {
         </div>
         <div className="flex items-center gap-1">
           {install && (
-            <Button size="sm" variant="ghost" onClick={install}>
+            // Icon only in the narrow desktop column, where the label wouldn't fit beside the others.
+            <Button size="sm" variant="ghost" title="Install" onClick={install}>
               <Download />
-              Install
+              <span className="lg:sr-only">Install</span>
             </Button>
           )}
+          <ThemeMenu />
           <AboutDialog />
+          <AppLauncher />
         </div>
       </header>
       <main className="flex min-h-[62dvh] min-w-0 flex-col lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:min-h-0">

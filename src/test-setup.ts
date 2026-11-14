@@ -11,6 +11,9 @@ if (typeof window !== 'undefined') {
     unobserve() {}
     disconnect() {}
   }
+  // Nor media queries: the system is always light.
+  window.matchMedia ??= () =>
+    ({ matches: false, addEventListener() {}, removeEventListener() {} }) as unknown as MediaQueryList
   let urls = 0
   URL.createObjectURL ??= () => `blob:test/${++urls}`
   URL.revokeObjectURL ??= () => {}

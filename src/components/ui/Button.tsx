@@ -7,6 +7,10 @@ const VARIANTS = {
   ghost: 'text-ink-soft hover:bg-sunken hover:text-ink disabled:text-ink-faint',
 }
 
+/** The header's icon-only triggers (theme, about, apps). */
+export const ICON_BUTTON =
+  'flex size-8 items-center justify-center rounded-control text-ink-soft transition-colors duration-150 hover:bg-sunken hover:text-ink data-[state=open]:bg-sunken data-[state=open]:text-ink [&_svg]:size-4'
+
 const SIZES = {
   sm: 'h-7 gap-1.5 px-2.5 text-[13px]',
   md: 'h-9 gap-2 px-3.5 text-sm',

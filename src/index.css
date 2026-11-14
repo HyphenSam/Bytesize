@@ -1,7 +1,8 @@
 @import 'tailwindcss';
 
 /* Zinc neutrals and one teal accent (primary action, selection, focus,
-   progress). Light and dark follow the system. */
+   progress). Light and dark follow the system unless one is chosen;
+   `data-theme` on <html> is always the one in use (set in index.html). */
 @theme {
   --font-sans: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 
@@ -33,33 +34,31 @@
   --ease-out-quint: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --color-canvas: oklch(0.165 0.004 286);
-    --color-panel: oklch(0.2 0.005 286);
-    --color-stage: oklch(0.13 0.003 286);
-    --color-sunken: oklch(0.235 0.006 286);
-    --color-line: oklch(0.275 0.006 286);
-    --color-line-strong: oklch(0.36 0.008 286);
-    --color-ink: oklch(0.965 0.002 286);
-    --color-ink-soft: oklch(0.74 0.01 286);
-    --color-ink-faint: oklch(0.6 0.01 286);
-    /* Teal with white text stays at AA only up to about 0.53 L, so the
-       dark theme's accent is as dark as the light one's; focus rings use
-       the lighter text tint to stand out on the dark panels. */
-    --color-accent: oklch(0.511 0.086 186);
-    --color-accent-hover: oklch(0.47 0.08 187);
-    --color-accent-ink: oklch(0.99 0 0);
-    --color-accent-soft: oklch(0.3 0.05 186);
-    --color-accent-text: oklch(0.8 0.11 183);
-    --color-focus: oklch(0.8 0.11 183);
-    --color-danger: oklch(0.68 0.18 25);
-    --color-danger-soft: oklch(0.28 0.06 25);
-    --color-ok: oklch(0.72 0.14 155);
-    --color-checker: oklch(0.2 0.003 286);
-    --shadow-float: 0 1px 2px oklch(0 0 0 / 0.4), 0 8px 24px -4px oklch(0 0 0 / 0.6);
-    color-scheme: dark;
-  }
+:root[data-theme='dark'] {
+  --color-canvas: oklch(0.165 0.004 286);
+  --color-panel: oklch(0.2 0.005 286);
+  --color-stage: oklch(0.13 0.003 286);
+  --color-sunken: oklch(0.235 0.006 286);
+  --color-line: oklch(0.275 0.006 286);
+  --color-line-strong: oklch(0.36 0.008 286);
+  --color-ink: oklch(0.965 0.002 286);
+  --color-ink-soft: oklch(0.74 0.01 286);
+  --color-ink-faint: oklch(0.6 0.01 286);
+  /* Teal with white text stays at AA only up to about 0.53 L, so the
+     dark theme's accent is as dark as the light one's; focus rings use
+     the lighter text tint to stand out on the dark panels. */
+  --color-accent: oklch(0.511 0.086 186);
+  --color-accent-hover: oklch(0.47 0.08 187);
+  --color-accent-ink: oklch(0.99 0 0);
+  --color-accent-soft: oklch(0.3 0.05 186);
+  --color-accent-text: oklch(0.8 0.11 183);
+  --color-focus: oklch(0.8 0.11 183);
+  --color-danger: oklch(0.68 0.18 25);
+  --color-danger-soft: oklch(0.28 0.06 25);
+  --color-ok: oklch(0.72 0.14 155);
+  --color-checker: oklch(0.2 0.003 286);
+  --shadow-float: 0 1px 2px oklch(0 0 0 / 0.4), 0 8px 24px -4px oklch(0 0 0 / 0.6);
+  color-scheme: dark;
 }
 
 @layer base {

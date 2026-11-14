@@ -4,9 +4,24 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>Bytesize</title>
-    <meta name="description" content="Compresses, converts and resizes images to JPEG, WebP, AVIF, JPEG XL and PNG, on your device. Nothing is uploaded." />
+    <meta
+      name="description"
+      content="Compresses, converts and resizes images to JPEG, WebP, AVIF, JPEG XL and PNG, on your device. Nothing is uploaded."
+    />
     <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f8f8f9" />
     <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#141416" />
+    <script>
+      // The theme, before the first paint so a chosen one never flashes the
+      // other. Mirrors src/hooks/useTheme.ts, which takes over once loaded.
+      ;(function () {
+        var chosen = /(?:^|;\s*)theme=(light|dark)/.exec(document.cookie)
+        var theme = chosen ? chosen[1] : matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+        document.documentElement.dataset.theme = theme
+        document.querySelectorAll('meta[name="theme-color"]').forEach(function (meta) {
+          meta.setAttribute('content', theme === 'dark' ? '#141416' : '#f8f8f9')
+        })
+      })()
+    </script>
     <link rel="icon" href="/icon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
   </head>

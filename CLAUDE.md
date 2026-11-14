@@ -65,7 +65,8 @@ dark both first-class.
 - `src/lib/` pure logic: `engine.ts` (the job: decode, orient, resize, encode, metadata),
   `settings.ts`, `formats.ts` (sniffing, output format), `metadata.ts` (ICC and EXIF in JPEG, PNG,
   WebP), `orientation.ts` (EXIF), `containers.ts` (JPEG/PNG/RIFF block walks), `target.ts` (quality
-  search), `image.ts`, `names.ts`, `queue.ts`, `protocol.ts` (page ↔ worker), `zoom.ts`.
+  search), `image.ts`, `names.ts`, `queue.ts`, `protocol.ts` (page ↔ worker), `zoom.ts`, `theme.ts` (auto, light,
+  dark; the cookie), `apps.ts` (the app launcher's list).
 - `src/worker/` the Web Worker: `codecs.ts` wires jSquash into the engine's `Codecs`.
 - `src/components/` the UI (`ui/` holds the primitives). `src/App.tsx` puts it together; it takes
   the workers' clients as a prop so tests pass fakes. `src/main.tsx` creates the real workers.
@@ -106,6 +107,12 @@ percent or two); libjxl effort 7; oxipng level 2.
 - `public/_headers` sets COOP `same-origin` and COEP `require-corp` so the AVIF and JPEG XL encoders
   can use threads. Everything is same-origin, so nothing needs CORP headers; adding a cross-origin
   resource (fonts, analytics, a CDN) will break unless it sends them.
+- The theme choice is a `theme` cookie on `Domain=hyphensam.com`, shared with the sister sites (Art
+  Cleaner, Moviola); on localhost it stays on the host. `index.html` applies it before the first paint.
+- The app launcher (grid button) reads `https://apps.hyphensam.com/apps.json` when first opened, a
+  separate static Worker (`../hyphensam-apps`) that every sister site reads, so a site is added there
+  once. It must send CORS and `Cross-Origin-Resource-Policy: cross-origin`, or COEP blocks it.
+  `FALLBACK_APPS` in `src/lib/apps.ts` is used until it arrives or if it can't.
 - The service worker precaches the app shell and caches each wasm the first time it's used, so the
   app works offline for the formats already used. Hashed file names make the cache safe forever.
 

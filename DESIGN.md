@@ -98,7 +98,7 @@ components:
 
 A bench you bring images to: neutral surfaces, a settings column of short labelled controls, and a large stage where the image sits on plain grey. Nothing on screen competes with the image; the one teal accent marks the next thing to press and whatever is in progress. The system is Art Cleaner's, the sister app, with its own accent so the two are told apart at a glance: the category standard (a settings column beside an image stage, in the vein of Squoosh and Upscayl) finished carefully rather than reinvented.
 
-Density is moderate: compact 13–14 px labels, tight groups, generous separation between groups. Light and dark are equal citizens and follow the system setting. Motion is limited to 150–200 ms state changes.
+Density is moderate: compact 13–14 px labels, tight groups, generous separation between groups. Light and dark are equal citizens and follow the system setting unless one is chosen from the header's theme menu. Motion is limited to 150–200 ms state changes.
 
 **Key Characteristics:**
 - Zinc neutrals in OKLCH (hue 286), one teal accent (hue 186).
@@ -123,7 +123,7 @@ Neutral zinc greys with a single teal; the image supplies every other colour.
 - **Ink** (ink, ink-soft): text and secondary text, both at least 4.5:1 on panel and canvas.
 - **Danger / OK** (danger, ok): a failed image's ring and badge; a finished image's tick.
 
-Dark mode redefines every token under `prefers-color-scheme: dark` (canvas 0.165 L, panel 0.2 L, stage 0.13 L, ink 0.965 L) in `src/index.css`. The accent stays at 0.511 L: white text on teal holds AA only up to about 0.53 L.
+Dark mode redefines every token under `:root[data-theme='dark']` (canvas 0.165 L, panel 0.2 L, stage 0.13 L, ink 0.965 L) in `src/index.css`; `data-theme` is always the theme in use, set before the first paint by a script in `index.html` from the shared `theme` cookie (or the system), then kept by `useTheme`. The accent stays at 0.511 L: white text on teal holds AA only up to about 0.53 L.
 
 ### Named Rules
 **The Image Owns Colour Rule.** Nothing but the teal accent and the two status colours carries chroma. The stage stays neutral grey so colours and compression artefacts can be judged.
